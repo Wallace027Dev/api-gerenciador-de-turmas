@@ -1,0 +1,51 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Usuario {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  cpf       String   @unique
+  senha     String
+  role      String   @default("aluno")
+  token     String?  @default("")
+  createdAt DateTime @default(now())
+
+  materias        Materia[]      @relation("MateriasDoProfessor")
+  turmasProfessor Turma[]        @relation("ProfessorDaTurma")
+  turmas          AlunoNaTurma[]
+}
+
+model Turma {
+  id          Int     @id @default(autoincrement())
+  nome        String
+  professorId Int
+  professor   Usuario @relation("ProfessorDaTurma", fields: [professorId], references: [id])
+
+  horario DateTime
+  duracao Int // Duração em minutos (ex: 90 para 1h30)
+  sala   String
+
+  alunos AlunoNaTurma[]
+}
+
+model Materia {
+  id          Int     @id @default(autoincrement())
+  nome        String
+  professorId Int
+  professor   Usuario @relation("MateriasDoProfessor", fields: [professorId], references: [id])
+}
+
+model AlunoNaTurma {
+  id        Int     @id @default(autoincrement())
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuarioId Int
+  turma     Turma   @relation(fields: [turmaId], references: [id])
+  turmaId   Int
+}
