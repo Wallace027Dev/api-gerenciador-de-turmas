@@ -4,23 +4,23 @@ const capturaErros = require("../utils/capturaErros");
 const rotasDeMateria = express.Router();
 
 rotasDeMateria.get(
-  "/materias",
+  "/",
   capturaErros(controladorDeMateria.listarTodos)
 );
 rotasDeMateria.get(
-  "/materias/:id",
+  "/:id",
   capturaErros(controladorDeMateria.buscarUm)
 );
 rotasDeMateria.post(
-  "/materias",
+  "/",
   capturaErros(controladorDeMateria.criar)
 );
 rotasDeMateria.put(
-  "/materias/:id",
+  "/:id",
   capturaErros(controladorDeMateria.atualizar)
 );
 rotasDeMateria.delete(
-  "/materias/:id",
+  "/:id",
   capturaErros(controladorDeMateria.remover)
 );
 

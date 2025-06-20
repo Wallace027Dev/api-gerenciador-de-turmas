@@ -1,42 +1,43 @@
-const { PrismaClient } = require("@prisma/client");
-const { Usuario } = require("../models/Usuario");
-
-const prisma = new PrismaClient();
+const { db } = require("../../prisma/main");
 
 class RepositorioDeUsuario {
-  async buscarTodos() {
-    return await prisma.usuario.findMany();
+  async listarTodos() {
+    return await db.usuario.findMany();
+  }
+
+  async buscarPeloEmail(email) {
+    return await db.usuario.findUnique({ where: { email } });
+  }
+
+  async buscarPeloId(id) {
+    return await db.usuario.findUnique({ where: { id } });
+  }
+
+  async buscarPeloCpf(cpf) {
+    return await db.usuario.findUnique({ where: { cpf } });
   }
 
   async criar({ nome, email, cpf, senha }) {
-    return await prisma.usuario.create({
+    return await db.usuario.create({
       data: {
         nome,
         email,
         cpf,
         senha,
-        role: "aluno"
-      }
+        role: "aluno",
+      },
     });
   }
 
-  async buscarPeloEmail(email) {
-    return await prisma.usuario.findUnique({ where: { email } });
-  }
-
-  async buscarPeloId(id) {
-    return await prisma.usuario.findUnique({ where: { id } });
-  }
-
-  async atualizar(id, dadosAtualizados) {
-    return await prisma.usuario.update({
+  async atualizarPeloId(id, dadosAtualizados) {
+    return await db.usuario.update({
       where: { id },
-      data: dadosAtualizados
+      data: dadosAtualizados,
     });
   }
 
-  async deletarUmUsuario(id) {
-    return await prisma.usuario.delete({ where: { id } });
+  async removerUsuarioPeloId(id) {
+    return await db.usuario.delete({ where: { id } });
   }
 }
 

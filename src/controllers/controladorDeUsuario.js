@@ -2,8 +2,8 @@ const servicoDeUsuario = require("../services/servicoDeUsuario");
 const validadorDeUsuario = require("../validators/validadorDeUsuario");
 
 class ControladorDeUsuario {
-  async pegarTodos(_req, res) {
-    const usuarios = await servicoDeUsuario.buscarTodos();
+  async listarTodos(_req, res) {
+    const usuarios = await servicoDeUsuario.listarTodos();
 
     const usuariosSemSenha = usuarios.map(({ senha, ...usuario }) => usuario);
 
@@ -27,9 +27,7 @@ class ControladorDeUsuario {
     const validacao = validadorDeUsuario(req.body);
     if (validacao.error) throw new HttpError(400, validacao.error);
 
-    const { senha, ...usuarioSemSenha } = await servicoDeUsuario.cadastrar(
-      req.body
-    );
+    const { senha, ...usuarioSemSenha } = await servicoDeUsuario.cadastrar(req.body);
 
     res.status(201).json({mesagem: "Usuário cadastrado", dados: usuarioSemSenha});
   }
@@ -52,11 +50,11 @@ class ControladorDeUsuario {
     res.status(200).json({mensagem: "Usuário atualizado", dados: usuarioAtualizado});
   }
 
-  async deletar(req, res) {
+  async remover(req, res) {
     if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
     const id = Number(req.params.id);
-    await servicoDeUsuario.deletar(id);
+    await servicoDeUsuario.remover(id);
 
     res
       .status(204)

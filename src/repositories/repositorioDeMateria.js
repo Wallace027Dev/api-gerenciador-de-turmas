@@ -9,26 +9,23 @@ class RepositorioDeUsuario {
     return await db.materia.findUnique({ where: { id } });
   }
 
-  async criar({ nome, professorId, horario, duracao, sala }) {
+  async criar({ nome, professorId }) {
     return await db.materia.create({
       data: {
         nome,
-        professorId,
-        horario,
-        duracao,
-        sala,
+        professorId
       },
     });
   }
 
-  async atualizar(id, dadosAtualizados) {
+  async atualizarPeloId(id, dadosAtualizados) {
     return await db.materia.update({
       where: { id },
       data: dadosAtualizados,
     });
   }
 
-  async remover(id) {
+  async removerPeloId(id) {
     return await db.materia.delete({ where: { id } });
   }
 }

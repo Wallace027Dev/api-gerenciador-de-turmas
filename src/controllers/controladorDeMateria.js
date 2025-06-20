@@ -1,40 +1,42 @@
+const { HttpError } = require("../errors/HttpError");
 const servicoDeMateria = require("../services/servicoDeMateria");
+const validadorDeMateria = require("../validators/validadorDeMateria");
 
 class ControladorDeMateria {
   async listarTodos(_req, res) {
-    const materias = await servicoDeMateria.listar();
+    const materias = await servicoDeMateria.listarTodos();
 
-    res.status(200).json(materias);
+    res.status(200).json({ mensagem: "Materias encontradas", dados: materias });
   }
 
   async buscarUm(req, res) {
-    const id = req.params.id;
-    const materia = await servicoDeMateria.buscar(id);
+    if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
-    res.status(200).json(materia);
+    const id = Number(req.params.id);
+    const materia = await servicoDeMateria.buscarUm(id);
+
+    res.status(200).json({ mesagem: "Matéria encontrada", dados: materia });
   }
 
   async criar(req, res) {
-    const { nome, professorId, horario, duracao, sala } = req.body;
-    const resposta = await servicoDeMateria.criar(
-      nome,
-      professorId,
-      horario,
-      duracao,
-      sala
-    );
+    const validacao = validadorDeMateria(req.body);
+    if (validacao.error) throw new HttpError(400, validacao.error);
 
-    if (resposta.error) res.status(400).json(resposta.error);
+    const novaMateria = await servicoDeMateria.criar(req.body);
 
-    res.status(201).json(resposta);
+    res.status(201).json({ mensagem: "Matéria criada", dados: novaMateria });
   }
 
   async atualizar(req, res) {
-    const dados = req.body;
-    const materiaId = req.params.id;
-    const resposta = await servicoDeMateria.atualizar(materiaId, dados);
+    if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
-    res.status(200).json(resposta);
+    const id = Number(req.params.id);
+
+    const materiaAtualizada = await servicoDeMateria.atualizar(id, req.body);
+
+    res
+      .status(200)
+      .json({ mensagem: "Matéria atualizada", dados: materiaAtualizada });
   }
 
   async remover(req, res) {
