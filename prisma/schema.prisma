@@ -8,31 +8,17 @@ generator client {
 }
 
 model Usuario {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  cpf       String   @unique
-  senha     String
-  role      String   @default("aluno")
-  token     String?  @default("")
-  createdAt DateTime @default(now())
-
+  id              Int            @id @default(autoincrement())
+  nome            String
+  email           String         @unique
+  cpf             String         @unique
+  senha           String
+  role            String         @default("aluno")
+  token           String?        @default("")
+  createdAt       DateTime       @default(now())
   materias        Materia[]      @relation("MateriasDoProfessor")
   turmasProfessor Turma[]        @relation("ProfessorDaTurma")
   turmas          AlunoNaTurma[]
-}
-
-model Turma {
-  id          Int     @id @default(autoincrement())
-  nome        String
-  professorId Int
-  professor   Usuario @relation("ProfessorDaTurma", fields: [professorId], references: [id])
-
-  horario DateTime
-  duracao Int // Duração em minutos (ex: 90 para 1h30)
-  sala   String
-
-  alunos AlunoNaTurma[]
 }
 
 model Materia {
@@ -40,12 +26,25 @@ model Materia {
   nome        String
   professorId Int
   professor   Usuario @relation("MateriasDoProfessor", fields: [professorId], references: [id])
+  turmas      Turma[]
+}
+
+model Turma {
+  id          Int            @id @default(autoincrement())
+  materiaId   Int
+  materia     Materia        @relation(fields: [materiaId], references: [id])
+  professorId Int
+  professor   Usuario        @relation("ProfessorDaTurma", fields: [professorId], references: [id])
+  horario     String
+  duracao     Int // Duração em minutos (ex: 90 para 1h30)
+  sala        String
+  alunos      AlunoNaTurma[]
 }
 
 model AlunoNaTurma {
   id        Int     @id @default(autoincrement())
-  usuario   Usuario @relation(fields: [usuarioId], references: [id])
+  usuario   Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
   usuarioId Int
-  turma     Turma   @relation(fields: [turmaId], references: [id])
+  turma     Turma   @relation(fields: [turmaId], references: [id], onDelete: Cascade)
   turmaId   Int
 }

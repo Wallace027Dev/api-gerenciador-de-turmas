@@ -1,11 +1,11 @@
 const z = require("zod");
 
-const EsquemaDeMateria = z.object({
-      nome: z
-        .string({ required_error: "O nome é obrigatório." })
-        .trim()
-        .min(3, { message: "O nome deve conter pelo menos três caractere." }),
+const EsquemaDeTurma = z.object({
       professorId: z
+        .number({ required_error: "O professor é obrigatório." })
+        .int({ message: "O professor deve ser um número inteiro." })
+        .positive({ message: "O professor deve ser um número positivo." }),
+      materiaId: z
         .number({ required_error: "O professor é obrigatório." })
         .int({ message: "O professor deve ser um número inteiro." })
         .positive({ message: "O professor deve ser um número positivo." }),
@@ -19,8 +19,8 @@ const EsquemaDeMateria = z.object({
         .min(3, { message: "A sala deve conter pelo menos três caractere." }),
     });
 
-function validadorDeMateria(dados) {
-  const validacao = EsquemaDeMateria.safeParse(dados);
+function validadorDeTurma(dados) {
+  const validacao = EsquemaDeTurma.safeParse(dados);
 
   if (!validacao.success) {
     return { error: validacao.error.format() };
@@ -29,4 +29,4 @@ function validadorDeMateria(dados) {
   return { error: null };
 }
 
-module.exports = validadorDeMateria;
+module.exports = validadorDeTurma;

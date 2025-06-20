@@ -1,51 +1,85 @@
+const { HttpError } = require("../errors/HttpError");
 const servicoDeTurma = require("../services/servicoDeTurma");
+const validadorDeTurma = require("../validators/validadorDeTurma");
 
-class controladorDeTurma {
-  async pegarTodos(_req, res) {
-    const usuarios = await servicoDeTurma.buscarTodos();
+class ControladorDeTurma {
+  async listarTodos(_req, res) {
+    const turmas = await servicoDeTurma.listarTodos();
 
-    res.status(200).json(usuarios);
+    res.status(200).json({ mensagem: "Turmas encontradas", dados: turmas });
   }
 
-  async pegarUmPeloID(req, res) {
-    const id = req.params.id;
-    const usuario = await servicoDeTurma.pegarPeloID(id);
+  async buscarUm(req, res) {
+    if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
-    res.status(200).json(usuario);
+    const id = Number(req.params.id);
+    const {professorId, materiaId, ...turma} = await servicoDeTurma.buscarUm(id);
+
+    res.status(200).json({ mesagem: "Turma encontrada", dados: turma });
   }
 
-  async cadastrar(req, res) {
-    const { nome, email, cpf, senha } = req.body;
-    const resposta = await servicoDeTurma.cadastrar(nome, email, cpf, senha);
+  async criar(req, res) {
+    const validacao = validadorDeTurma(req.body);
+    if (validacao.error) throw new HttpError(400, validacao.error);
 
-    if (resposta.error) res.status(400).json(resposta.error);
+    const novaTurma = await servicoDeTurma.criar(req.body);
 
-    res.status(201).json(resposta);
-  }
-
-  async conectar(req, res) {
-    const { email, senha } = req.body;
-    const resposta = await servicoDeTurma.conectar(email, senha);
-
-    res.status(200).json(resposta);
+    res.status(201).json({ mensagem: "Turma criada", dados: novaTurma });
   }
 
   async atualizar(req, res) {
-    const dados = req.body;
-    const usuarioId = req.params.id;
-    const resposta = await servicoDeTurma.atualizar(usuarioId, dados);
+    if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
+    const id = Number(req.params.id);
 
-    res.status(200).json(resposta);
-  }
-
-  async deletar(req, res) {
-    const id = req.params.id;
-    await servicoDeTurma.deletar(id);
+    const turmaAtualizada = await servicoDeTurma.atualizar(id, req.body);
 
     res
       .status(200)
-      .json({ mensagem: `Usuário com ID ${id} deletado com sucesso.` });
+      .json({ mensagem: "Turma atualizada", dados: turmaAtualizada });
+  }
+
+  async remover(req, res) {
+    if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
+    const id = Number(req.params.id);
+
+    await servicoDeTurma.remover(id);
+
+    res
+      .status(200)
+      .json({ mensagem: `Turma com ID ${id} deletada com sucesso.` });
+  }
+
+  async listarAlunos(req, res) {
+    if (!req.params.turmaId) throw new HttpError(400, "O ID não foi informado");
+
+    const turmaId = Number(req.params.turmaId);
+    const alunos = await servicoDeTurma.listarAlunos(turmaId);
+
+    res.status(200).json({ mensagem: "Alunos desta turma encontrados", dados: alunos });
+  }
+
+  async cadastrarAlunos(req, res) {
+    if (!req.params.turmaId) throw new HttpError(400, "O ID não foi informado");
+
+    const turmaId = Number(req.params.turmaId);
+    const alunos = await servicoDeTurma.cadastrarAlunos(turmaId, req.body.alunosIds);
+
+    res
+      .status(201)
+      .json({ mensagem: "Alunos cadastrado na turma com sucesso.", dados: alunos });    
+  }
+
+  async removerAlunoDaTurma(req, res) {
+    if (!req.params.turmaId) throw new HttpError(400, "O ID não foi informado");
+
+    const turmaId = Number(req.params.turmaId);
+    const alunoId = Number(req.params.alunoId);
+    await servicoDeTurma.removerAlunoDaTurma(turmaId, alunoId);
+
+    res
+      .status(200)
+      .json({ mensagem: "Aluno removido da turma com sucesso." });    
   }
 }
 
-module.exports = new controladorDeTurma();
+module.exports = new ControladorDeTurma();

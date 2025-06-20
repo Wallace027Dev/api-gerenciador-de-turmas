@@ -4,33 +4,37 @@ const capturaErros = require("../utils/capturaErros");
 const rotasDeTurma = express.Router();
 
 rotasDeTurma.post(
-  "/turmas",
-  capturaErros(controladorDeTurma.cadastrar)
+  "/:turmaId/alunos",
+  capturaErros(controladorDeTurma.cadastrarAlunos)
 );
 rotasDeTurma.get(
-  "/turmas",
-  capturaErros(controladorDeTurma.listarTurmas)
-);
-rotasDeTurma.put(
-  "/turmas/:id",
-  capturaErros(controladorDeTurma.atualizarTurma)
+  "/:turmaId/alunos",
+  capturaErros(controladorDeTurma.listarAlunos)
 );
 rotasDeTurma.delete(
-  "turmas/:id",
-  capturaErros(controladorDeTurma.removerTurma)
+  "/:turmaId/alunos/:alunoId",
+  capturaErros(controladorDeTurma.removerAlunoDaTurma)
 );
 
 rotasDeTurma.post(
-  "/turmas/:id/alunos",
-  capturaErros(controladorDeTurma.adicionarAlunoNaTurma)
+  "/",
+  capturaErros(controladorDeTurma.criar)
 );
 rotasDeTurma.get(
-  "/turmas/:id/alunos",
-  capturaErros(controladorDeTurma.listarAlunosDaTurma)
+  "/",
+  capturaErros(controladorDeTurma.listarTodos)
+);
+rotasDeTurma.get(
+  "/:id",
+  capturaErros(controladorDeTurma.buscarUm)
+);
+rotasDeTurma.put(
+  "/:id",
+  capturaErros(controladorDeTurma.atualizar)
 );
 rotasDeTurma.delete(
-  "/turmas/:id/alunos/:id",
-  capturaErros(controladorDeTurma.removerAlunoDaTurma)
+  "/:id",
+  capturaErros(controladorDeTurma.remover)
 );
 
 module.exports = rotasDeTurma;

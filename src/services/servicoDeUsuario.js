@@ -44,7 +44,7 @@ class ServicoDeUsuario {
     if (!senhaCorreta) throw new HttpError(401, "Senha incorreta.");
 
     const token = Usuario.gerarToken(usuarioEncontrado);
-    await RepositorioDeUsuario.atualizar(usuarioEncontrado.id, { token });
+    await RepositorioDeUsuario.atualizarPeloId(usuarioEncontrado.id, { token });
     
     return token;
   }

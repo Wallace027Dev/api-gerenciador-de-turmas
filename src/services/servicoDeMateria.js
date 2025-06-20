@@ -17,7 +17,7 @@ class ServicoDeMateria {
   async criar({ nome, professorId }) {
     const usuarioExiste = await RepositorioDeUsuario.buscarPeloId(professorId);
 
-    if (!usuarioExiste) throw new HttpError(404, "Usuário não encontrado!");
+    if (!usuarioExiste) throw new HttpError(404, "Matéria não encontrado!");
 
     if (usuarioExiste.role !== "professor") {
       throw new HttpError(403, "Apenas professores podem criar matérias!");

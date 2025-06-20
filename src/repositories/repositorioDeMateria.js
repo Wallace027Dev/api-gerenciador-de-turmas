@@ -6,14 +6,17 @@ class RepositorioDeUsuario {
   }
 
   async buscarPeloId(id) {
-    return await db.materia.findUnique({ where: { id } });
+    return await db.materia.findUnique({
+      where: { id },
+      include: { professor: true, turmas: true },
+    });
   }
 
   async criar({ nome, professorId }) {
     return await db.materia.create({
       data: {
         nome,
-        professorId
+        professorId,
       },
     });
   }

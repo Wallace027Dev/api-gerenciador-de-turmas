@@ -13,7 +13,7 @@ class ControladorDeMateria {
     if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
     const id = Number(req.params.id);
-    const materia = await servicoDeMateria.buscarUm(id);
+    const { professorId, ...materia } = await servicoDeMateria.buscarUm(id);
 
     res.status(200).json({ mesagem: "Matéria encontrada", dados: materia });
   }
@@ -31,7 +31,6 @@ class ControladorDeMateria {
     if (!req.params.id) throw new HttpError(400, "O ID não foi informado");
 
     const id = Number(req.params.id);
-
     const materiaAtualizada = await servicoDeMateria.atualizar(id, req.body);
 
     res
@@ -44,7 +43,7 @@ class ControladorDeMateria {
     await servicoDeMateria.remover(id);
 
     res
-      .status(204)
+      .status(200)
       .json({ mensagem: `Matéria com ID ${id} deletada com sucesso.` });
   }
 }

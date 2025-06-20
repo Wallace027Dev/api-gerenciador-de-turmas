@@ -57,7 +57,7 @@ class ControladorDeUsuario {
     await servicoDeUsuario.remover(id);
 
     res
-      .status(204)
+      .status(200)
       .json({ mensagem: `Usuário com ID ${id} deletado com sucesso.` });
   }
 }
