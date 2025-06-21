@@ -15,7 +15,7 @@ const EsquemaDeUsuario = z.object({
   senha: z
     .string({ required_error: "A senha é obrigatória." })
     .trim()
-    .min(8, { message: "A senha deve conter pelo menos 8 caracteres." }),
+    .min(8, { message: "A senha deve conter pelo menos 8 caracteres." })
 });
 
 function validadorDeUsuario(dados) {

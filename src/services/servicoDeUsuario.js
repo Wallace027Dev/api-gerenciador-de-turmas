@@ -14,21 +14,29 @@ class ServicoDeUsuario {
     return usuario;
   }
 
-  async cadastrar({ nome, email, cpf, senha }) {
+  async cadastrar({ nome, email, cpf, senha, role }, headers) {
+    await this._verificarDuplicidade(email, cpf);
+
+    const rolesPermitidas = ["professor", "aluno"];
+    if (role && !rolesPermitidas.includes(role)) {
+      throw new HttpError(
+        400,
+        "Role inválida. Deve ser 'professor' ou 'aluno'."
+      );
+    }
+
+    if (role === "professor") {
+      await this._verificarAutenticacaoAdmin(headers);
+    }
+
     const senhaHash = await Usuario.criptografar(senha);
-
-    const emailJaCadastrado = await RepositorioDeUsuario.buscarPeloEmail(email);
-    if (emailJaCadastrado) throw new HttpError(409, "Usuário ja cadastrado.");
-
-    const cpfJaCadastrado = await RepositorioDeUsuario.buscarPeloCpf(cpf);
-    if (cpfJaCadastrado) throw new HttpError(409, "Usuário ja cadastrado.");
 
     return await RepositorioDeUsuario.criar({
       nome,
       email,
       cpf,
       senha: senhaHash,
-      role: "aluno",
+      role: role ?? "aluno",
     });
   }
 
@@ -45,7 +53,7 @@ class ServicoDeUsuario {
 
     const token = Usuario.gerarToken(usuarioEncontrado);
     await RepositorioDeUsuario.atualizarPeloId(usuarioEncontrado.id, { token });
-    
+
     return token;
   }
 
@@ -66,7 +74,10 @@ class ServicoDeUsuario {
       dadosAtualizados.senha = await Usuario.criptografar(senha);
     }
 
-    return await RepositorioDeUsuario.atualizarPeloId(usuarioId, dadosAtualizados);
+    return await RepositorioDeUsuario.atualizarPeloId(
+      usuarioId,
+      dadosAtualizados
+    );
   }
 
   async remover(id) {
@@ -76,6 +87,43 @@ class ServicoDeUsuario {
     }
 
     return await RepositorioDeUsuario.removerUsuarioPeloId(id);
+  }
+
+  async _verificarDuplicidade(email, cpf) {
+    const emailJaExiste = await RepositorioDeUsuario.buscarPeloEmail(email);
+    if (emailJaExiste) {
+      throw new HttpError(409, "Email já cadastrado.");
+    }
+
+    const cpfJaExiste = await RepositorioDeUsuario.buscarPeloCpf(cpf);
+    if (cpfJaExiste) {
+      throw new HttpError(409, "CPF já cadastrado.");
+    }
+  }
+
+  async _verificarAutenticacaoAdmin(headers) {
+    const authorization = headers["authorization"];
+    if (!authorization) {
+      throw new HttpError(401, "Token não enviado.");
+    }
+
+    const token = authorization.replace("Bearer ", "").trim();
+
+    let payload;
+    try {
+      payload = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      throw new HttpError(401, "Token inválido.");
+    }
+
+    if (payload.role !== "admin") {
+      throw new HttpError(403, "Somente admin pode criar professores.");
+    }
+
+    const admin = await RepositorioDeUsuario.buscarPeloId(1);
+    if (!admin || admin.token.trim() !== token) {
+      throw new HttpError(403, "Token inválido para o admin.");
+    }
   }
 }
 

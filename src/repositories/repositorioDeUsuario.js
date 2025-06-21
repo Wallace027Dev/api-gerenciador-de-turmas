@@ -17,14 +17,14 @@ class RepositorioDeUsuario {
     return await db.usuario.findUnique({ where: { cpf } });
   }
 
-  async criar({ nome, email, cpf, senha }) {
+  async criar({ nome, email, cpf, senha, role }) {
     return await db.usuario.create({
       data: {
         nome,
         email,
         cpf,
         senha,
-        role: "aluno",
+        role,
       },
     });
   }

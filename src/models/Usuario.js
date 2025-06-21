@@ -16,7 +16,7 @@ class Usuario {
         id: usuario.id,
         role: usuario.role || "student",
       },
-      "senhaSecreta",
+      process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
   }

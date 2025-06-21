@@ -27,7 +27,7 @@ class ControladorDeUsuario {
     const validacao = validadorDeUsuario(req.body);
     if (validacao.error) throw new HttpError(400, validacao.error);
 
-    const { senha, ...usuarioSemSenha } = await servicoDeUsuario.cadastrar(req.body);
+    const { senha, ...usuarioSemSenha } = await servicoDeUsuario.cadastrar(req.body, req.headers);
 
     res.status(201).json({mesagem: "Usuário cadastrado", dados: usuarioSemSenha});
   }
