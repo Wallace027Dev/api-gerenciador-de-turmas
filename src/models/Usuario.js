@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 class Usuario {
   static async criptografar(senha) {
-    return await bcrypt.hash(senha, 10);
+    return await bcrypt.hash(senha, Number(process.env.SALT_ROUNDS));
   }
 
   static async compararSenha(senha, hash) {
