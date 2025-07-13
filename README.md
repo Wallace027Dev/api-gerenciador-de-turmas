@@ -121,12 +121,3 @@ npm install
 npx prisma migrate dev
 npm run dev
 ```
-
----
-
-## ✅ Próximos passos (futuros ajustes para aula):
-
-- Testes unitários com Jest
-- Melhorias de DTOs (Data Transfer Objects)
-- Tratamento global de erros com middlewares
-- Documentação automática com Swagger ou similar (opcional)
